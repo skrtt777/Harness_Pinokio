@@ -1,0 +1,17 @@
+logs/
+cache/
+outputs/
+.env
+.env.*
+!.env.example
+*.zip
+.DS_Store
+Thumbs.db
+
+app/node_modules/
+app/npm-debug.log*
+app/data/
+app/frontend/node_modules/
+app/frontend/dist/
+app/frontend/*.tsbuildinfo
+app/frontend/.test-build/

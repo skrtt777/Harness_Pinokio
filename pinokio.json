@@ -1,0 +1,5 @@
+{
+  "title": "AI Harness",
+  "description": "Chat local com o Codex CLI, memória real em SQLite (com extração automática pela IA) e um atlas neural 3D da sua memória.",
+  "icon": "icon.svg"
+}
