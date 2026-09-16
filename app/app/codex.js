@@ -1,7 +1,27 @@
 import { execFile } from "node:child_process";
-import { promisify } from "node:util";
 
-const execFileAsync = promisify(execFile);
+/**
+ * Runs execFile and immediately closes the child's stdin.
+ * Without this, Node leaves stdin open as a pipe (not a TTY, not EOF), and
+ * `codex exec` — seeing a non-TTY stdin — blocks waiting to read additional
+ * piped-in context that never arrives, until the whole call times out. The
+ * prompt is already passed as an argument, so closing stdin right away
+ * tells Codex there is nothing more to read and it proceeds immediately.
+ */
+function execFileNoStdin(file, args, options) {
+  return new Promise((resolve, reject) => {
+    const child = execFile(file, args, options, (error, stdout, stderr) => {
+      if (error) {
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
+      } else {
+        resolve({ stdout, stderr });
+      }
+    });
+    child.stdin?.end();
+  });
+}
 
 export function buildProviderConfig(env = process.env) {
   return {
@@ -44,7 +64,7 @@ export function parseCodexOutput(stdout) {
 export async function runCodex(prompt, env = process.env) {
   try {
     const args = ["exec", "--ephemeral", "--json", "--skip-git-repo-check", prompt];
-    const result = await execFileAsync(env.CODEX_BIN || "codex", args, {
+    const result = await execFileNoStdin(env.CODEX_BIN || "codex", args, {
       cwd: env.CODEX_CWD || process.cwd(),
       windowsHide: true,
       maxBuffer: 8 * 1024 * 1024,

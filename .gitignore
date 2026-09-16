@@ -10,7 +10,7 @@ Thumbs.db
 
 app/node_modules/
 app/npm-debug.log*
-app/data/
+app/app/data/
 app/frontend/node_modules/
 app/frontend/dist/
 app/frontend/*.tsbuildinfo
